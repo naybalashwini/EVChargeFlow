@@ -45,10 +45,10 @@ export default function MapView({
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    // Using Positron - the cleanest, most Google Maps-like free style
+    // Using Liberty style - detailed with roads, buildings, and clear features
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://tiles.openfreemap.org/styles/positron',
+      style: 'https://tiles.openfreemap.org/styles/liberty',
       center: center,
       zoom: zoom,
       attributionControl: false,
