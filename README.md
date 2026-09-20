@@ -52,7 +52,7 @@ npm install
 npm run dev
 ```
 
-Open https://ev-charge-flow.vercel.app/explore in your browser.
+Open [https://ev-charge-flow.vercel.app/explore](https://ev-charge-flow-4vhuw7wf8-index-cebe.vercel.app) in your browser.
 
 ### Build for Production
 
