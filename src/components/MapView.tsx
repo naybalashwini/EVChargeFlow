@@ -41,13 +41,14 @@ export default function MapView({
   const stopMarkersRef = useRef<maplibregl.Marker[]>([]);
   const mapReadyRef = useRef(false);
 
-  // Initialize map
+  // Initialize map with Google Maps-like style
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
+    // Using Positron - the cleanest, most Google Maps-like free style
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://tiles.openfreemap.org/styles/bright',
+      style: 'https://tiles.openfreemap.org/styles/positron',
       center: center,
       zoom: zoom,
       attributionControl: false,
@@ -97,24 +98,56 @@ export default function MapView({
       const availability = getStationAvailability(station);
       const isSelected = station.id === selectedStationId;
 
+      // Google Maps-style charging pin
       const el = document.createElement('div');
-      el.className = `charging-marker ${isSelected ? 'selected' : availability}`;
-      el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`;
+      el.className = `gm-marker ${isSelected ? 'selected' : availability}`;
+      el.innerHTML = `
+        <svg width="30" height="40" viewBox="0 0 30 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 0C6.716 0 0 6.716 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.716 23.284 0 15 0z" 
+                fill="${isSelected ? '#1a73e8' : availability === 'available' ? '#34a853' : availability === 'limited' ? '#f9ab00' : '#ea4335'}"/>
+          <circle cx="15" cy="14" r="8" fill="white"/>
+          <path d="M17 8l-5 7h3.5l-1 5 5-7h-3.5l1-5z" fill="${isSelected ? '#1a73e8' : '#34a853'}"/>
+        </svg>
+      `;
+      el.style.cursor = 'pointer';
+      el.style.transition = 'transform 0.15s ease';
       el.setAttribute('aria-label', `${station.name} - ${availability}`);
       el.setAttribute('role', 'button');
       el.setAttribute('tabindex', '0');
 
-      // Create popup
+      el.addEventListener('mouseenter', () => {
+        el.style.transform = 'scale(1.15) translateY(-2px)';
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+
+      // Create Google Maps-style popup
       const popup = new maplibregl.Popup({ 
-        offset: 25, 
+        offset: [0, -30], 
         closeButton: false,
-        className: 'station-popup'
+        className: 'gm-popup'
       }).setHTML(`
-        <div class="popup-inner">
-          <div class="popup-name">${station.name}</div>
-          <div class="popup-operator">${station.operator}</div>
-          <div class="popup-power">⚡ ${station.power} kW • ${station.connectors.join(', ')}</div>
-          <div class="popup-info">${station.availableChargers}/${station.totalChargers} available${station.pricePerKwh ? ` • ₹${station.pricePerKwh}/kWh` : ''}</div>
+        <div class="gm-popup-content">
+          <div class="gm-popup-name">${station.name}</div>
+          <div class="gm-popup-sub">${station.operator}</div>
+          <div class="gm-popup-row">
+            <span class="gm-popup-label">Power</span>
+            <span class="gm-popup-value">${station.power} kW</span>
+          </div>
+          <div class="gm-popup-row">
+            <span class="gm-popup-label">Connectors</span>
+            <span class="gm-popup-value">${station.connectors.join(', ')}</span>
+          </div>
+          <div class="gm-popup-row">
+            <span class="gm-popup-label">Available</span>
+            <span class="gm-popup-value">${station.availableChargers}/${station.totalChargers}</span>
+          </div>
+          ${station.pricePerKwh ? `
+          <div class="gm-popup-row">
+            <span class="gm-popup-label">Price</span>
+            <span class="gm-popup-value">₹${station.pricePerKwh}/kWh</span>
+          </div>` : ''}
         </div>
       `);
 
@@ -156,7 +189,7 @@ export default function MapView({
     }
   }, [selectedStationId, stations, routeGeometry]);
 
-  // User location marker
+  // User location marker (Google blue dot)
   useEffect(() => {
     if (!map.current) return;
 
@@ -167,13 +200,11 @@ export default function MapView({
 
     if (userLocation) {
       const el = document.createElement('div');
-      el.className = 'origin-marker';
-      el.style.width = '16px';
-      el.style.height = '16px';
-      el.style.borderRadius = '50%';
-      el.style.background = '#4ade80';
-      el.style.border = '3px solid white';
-      el.style.boxShadow = '0 0 12px rgba(74, 222, 128, 0.6)';
+      el.className = 'gm-user-location';
+      el.innerHTML = `
+        <div class="gm-user-dot"></div>
+        <div class="gm-user-pulse"></div>
+      `;
 
       userMarkerRef.current = new maplibregl.Marker({ element: el })
         .setLngLat([userLocation.lng, userLocation.lat])
@@ -181,32 +212,34 @@ export default function MapView({
     }
   }, [userLocation]);
 
-  // Route geometry - with proper styling
+  // Route geometry - Google Maps blue route style
   useEffect(() => {
     if (!map.current || !mapReadyRef.current) return;
 
     const mapInstance = map.current;
 
     // Remove existing route layers and source
-    if (mapInstance.getLayer('route-casing')) mapInstance.removeLayer('route-casing');
+    if (mapInstance.getLayer('route-outline')) mapInstance.removeLayer('route-outline');
     if (mapInstance.getLayer('route-layer')) mapInstance.removeLayer('route-layer');
     if (mapInstance.getSource('route')) mapInstance.removeSource('route');
 
     if (routeGeometry && routeGeometry.coordinates && routeGeometry.coordinates.length > 0) {
       // Add route source
-      mapInstance.addSource('route', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [{
-            type: 'Feature',
-            properties: {},
-            geometry: routeGeometry,
-          }],
-        },
-      });
+      const routeGeoJSON: GeoJSON.FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          properties: {},
+          geometry: routeGeometry,
+        }],
+      };
+      const sourceSpec = {
+        type: 'geojson' as const,
+      };
+      (sourceSpec as any)['data'] = routeGeoJSON;
+      mapInstance.addSource('route', sourceSpec as maplibregl.GeoJSONSourceSpecification);
 
-      // Find a good layer to insert route before (below labels, above roads)
+      // Find label layer to insert route below
       const layers = mapInstance.getStyle().layers;
       let labelLayerId = '';
       for (const layer of layers) {
@@ -216,9 +249,10 @@ export default function MapView({
         }
       }
 
-      // Add route casing (dark outline for visibility)
+      // Google Maps-style route: dark blue outline + lighter blue fill
+      // Outline (darker border for visibility)
       mapInstance.addLayer({
-        id: 'route-casing',
+        id: 'route-outline',
         type: 'line',
         source: 'route',
         layout: {
@@ -226,13 +260,13 @@ export default function MapView({
           'line-cap': 'round',
         },
         paint: {
-          'line-color': '#064e3b',
+          'line-color': '#1a73e8',
           'line-width': 10,
-          'line-opacity': 0.9,
+          'line-opacity': 0.4,
         },
       }, labelLayerId || undefined);
 
-      // Add main route line
+      // Main route line (Google blue)
       mapInstance.addLayer({
         id: 'route-layer',
         type: 'line',
@@ -242,7 +276,7 @@ export default function MapView({
           'line-cap': 'round',
         },
         paint: {
-          'line-color': '#4ade80',
+          'line-color': '#4285f4',
           'line-width': 6,
           'line-opacity': 1,
         },
@@ -256,7 +290,6 @@ export default function MapView({
           bounds.extend([coord[0], coord[1]]);
         });
         
-        // Add origin and destination to bounds
         if (originPoint) bounds.extend([originPoint.lng, originPoint.lat]);
         if (destinationPoint) bounds.extend([destinationPoint.lng, destinationPoint.lat]);
         if (chargingStops) {
@@ -264,9 +297,9 @@ export default function MapView({
         }
 
         mapInstance.fitBounds(bounds, {
-          padding: { top: 60, bottom: 60, left: 60, right: 60 },
+          padding: { top: 80, bottom: 80, left: 80, right: 80 },
           duration: 1200,
-          maxZoom: 14,
+          maxZoom: 13,
         });
       } catch (e) {
         console.warn('Could not fit bounds:', e);
@@ -274,7 +307,7 @@ export default function MapView({
     }
   }, [routeGeometry, originPoint, destinationPoint, chargingStops]);
 
-  // Origin/Destination/Stop markers
+  // Origin/Destination/Stop markers - Google Maps style
   useEffect(() => {
     if (!map.current) return;
 
@@ -286,7 +319,14 @@ export default function MapView({
 
     if (originPoint) {
       const el = document.createElement('div');
-      el.className = 'origin-marker';
+      el.className = 'gm-pin gm-pin-green';
+      el.innerHTML = `
+        <svg width="24" height="36" viewBox="0 0 24 36" fill="none">
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#34a853"/>
+          <circle cx="12" cy="12" r="5" fill="white"/>
+          <circle cx="12" cy="12" r="3" fill="#34a853"/>
+        </svg>
+      `;
       el.title = 'Start';
       originMarkerRef.current = new maplibregl.Marker({ element: el })
         .setLngLat([originPoint.lng, originPoint.lat])
@@ -295,7 +335,14 @@ export default function MapView({
 
     if (destinationPoint) {
       const el = document.createElement('div');
-      el.className = 'destination-marker';
+      el.className = 'gm-pin gm-pin-red';
+      el.innerHTML = `
+        <svg width="24" height="36" viewBox="0 0 24 36" fill="none">
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24s12-15 12-24C24 5.373 18.627 0 12 0z" fill="#ea4335"/>
+          <circle cx="12" cy="12" r="5" fill="white"/>
+          <circle cx="12" cy="12" r="3" fill="#ea4335"/>
+        </svg>
+      `;
       el.title = 'Destination';
       destMarkerRef.current = new maplibregl.Marker({ element: el })
         .setLngLat([destinationPoint.lng, destinationPoint.lat])
@@ -305,10 +352,15 @@ export default function MapView({
     if (chargingStops) {
       chargingStops.forEach((stop, idx) => {
         const el = document.createElement('div');
-        el.className = 'stop-marker';
+        el.className = 'gm-pin gm-pin-blue';
+        el.innerHTML = `
+          <svg width="28" height="40" viewBox="0 0 28 40" fill="none">
+            <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 26 14 26s14-15.5 14-26C28 6.268 21.732 0 14 0z" fill="#1a73e8"/>
+            <circle cx="14" cy="14" r="8" fill="white"/>
+            <text x="14" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#1a73e8" font-family="Arial">${idx + 1}</text>
+          </svg>
+        `;
         el.title = `Charging Stop ${idx + 1}`;
-        el.style.position = 'relative';
-        el.innerHTML = `<span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;font-weight:bold;color:white;">${idx + 1}</span>`;
         const marker = new maplibregl.Marker({ element: el })
           .setLngLat([stop.lng, stop.lat])
           .addTo(map.current!);
