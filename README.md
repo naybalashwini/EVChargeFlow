@@ -1,176 +1,209 @@
-# ⚡ ChargeFlow — EV Charging Intelligence & Trip Planner
+# ⚡ ChargeFlow
 
-A full-stack EV charging station locator, comparison, and intelligent trip-planning application.
+**EV Charging Intelligence & Trip Planner**
 
-![ChargeFlow](https://img.shields.io/badge/EV-Charging-green) ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-4-purple)
+A modern web application for finding EV charging stations, comparing options, and planning intelligent trips with charging stop recommendations.
 
-## 🚀 Quick Start (2 minutes)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-18.2-61dafb.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178c6.svg)
+![Tailwind](https://img.shields.io/badge/Tailwind-4.1-38bdf8.svg)
+
+## 🌟 Features
+
+### Core Functionality
+- **Interactive Map** - Real-time map with charging station markers using MapLibre GL JS
+- **Location Search** - Search any location using OpenStreetMap Nominatim API
+- **Geolocation** - Detect user's current location with browser API
+- **Trip Planning** - Calculate routes using OSRM with charging stop recommendations
+- **EV Range Calculator** - Calculate range based on battery capacity and consumption
+- **Smart Filtering** - Filter stations by distance, connector type, power, availability
+- **Station Comparison** - Compare up to 3 stations side-by-side
+- **Saved Stations** - Bookmark favorite charging stations
+- **Trip History** - View and manage past trip plans
+- **Vehicle Profiles** - Manage multiple EV configurations
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **PWA Support** - Installable as a progressive web app
+
+### Technical Highlights
+- Real geocoding via OpenStreetMap Nominatim
+- Real routing via OSRM (Open Source Routing Machine)
+- Interactive maps with MapLibre GL JS
+- Glassmorphism UI with dark theme
+- TypeScript for type safety
+- Modular architecture with clean separation of concerns
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js** v18+ → https://nodejs.org
-- **VS Code** (recommended) → https://code.visualstudio.com
+- Node.js 18+ and npm
 
-### Steps
+### Installation
 
 ```bash
-# 1. Extract the ZIP file (or clone the repo)
-# 2. Open terminal in the project folder
-# 3. Install dependencies
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/chargeflow.git
+cd chargeflow
+
+# Install dependencies
 npm install
 
-# 4. Start the development server
+# Start development server
 npm run dev
-
-# 5. Open your browser
-# Go to: http://localhost:3000
 ```
 
-That's it! The app runs in **demo mode** — no API keys needed.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+The optimized build will be in the `dist/` folder.
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | UI framework |
+| **TypeScript 5** | Type safety |
+| **Vite** | Build tool |
+| **Tailwind CSS 4** | Styling |
+| **MapLibre GL JS** | Interactive maps |
+| **React Router** | Navigation |
+| **Lucide React** | Icons |
+| **OpenStreetMap** | Geocoding & tiles |
+| **OSRM** | Route calculation |
 
 ## 📁 Project Structure
 
 ```
 chargeflow/
-├── index.html                 # HTML entry point
-├── package.json               # Dependencies & scripts
-├── package-lock.json          # Locked dependency versions
-├── tsconfig.json              # TypeScript configuration
-├── vite.config.js             # Vite build configuration
-├── .env.example               # Environment variables template
-├── README.md                  # This file
-│
-├── public/                    # Static assets
-│   ├── favicon.svg            # App favicon
-│   ├── icon-192.png           # PWA icon (192x192)
-│   ├── icon-512.png           # PWA icon (512x512)
-│   └── manifest.json          # PWA manifest
-│
-└── src/                       # Source code
-    ├── main.tsx               # App entry point
-    ├── App.tsx                # Main routing
-    ├── index.css              # Global styles + Tailwind
-    ├── types.ts               # TypeScript type definitions
-    │
-    ├── components/            # Reusable UI components
-    │   ├── Layout.tsx         # Navigation + responsive layout
-    │   └── MapView.tsx        # MapLibre GL interactive map
-    │
-    ├── pages/                 # Page components
-    │   ├── Home.tsx           # Landing page with hero
-    │   ├── Explore.tsx        # Station finder + map
-    │   ├── Planner.tsx        # Trip planner
-    │   ├── Saved.tsx          # Saved stations
-    │   ├── History.tsx        # Trip history
-    │   └── Account.tsx        # Auth + vehicle profiles
-    │
-    └── lib/                   # Utility functions
-        ├── calculations.ts    # EV math + algorithms
-        ├── demoData.ts        # 15 demo charging stations
-        ├── geocoding.ts       # Nominatim geocoding
-        ├── routing.ts         # OSRM route calculation
-        └── storage.ts         # localStorage persistence
+├── public/                 # Static assets
+│   ├── favicon.svg
+│   ├── icon-192.svg
+│   ├── icon-512.svg
+│   └── manifest.json
+├── src/
+│   ├── components/         # Reusable UI components
+│   │   ├── Layout.tsx      # Navigation & layout
+│   │   └── MapView.tsx     # MapLibre map component
+│   ├── pages/              # Page components
+│   │   ├── Home.tsx        # Landing page
+│   │   ├── Explore.tsx     # Station finder
+│   │   ├── Planner.tsx     # Trip planner
+│   │   ├── Saved.tsx       # Saved stations
+│   │   ├── History.tsx     # Trip history
+│   │   └── Account.tsx     # User account
+│   ├── lib/                # Utility functions
+│   │   ├── calculations.ts # EV math & algorithms
+│   │   ├── demoData.ts     # Demo station data
+│   │   ├── geocoding.ts    # Location search
+│   │   ├── routing.ts      # Route calculation
+│   │   └── storage.ts      # LocalStorage persistence
+│   ├── App.tsx             # Main app component
+│   ├── main.tsx            # Entry point
+│   ├── types.ts            # TypeScript types
+│   └── index.css           # Global styles
+├── index.html              # HTML template
+├── package.json            # Dependencies
+├── tsconfig.json           # TypeScript config
+├── vite.config.js          # Vite config
+└── README.md               # This file
 ```
 
-## ✨ Features
+## 🗺️ Pages
 
-### Core Features
-- 🗺️ **Interactive Map** — MapLibre GL with OpenFreeMap tiles
-- 🔍 **Location Search** — Real geocoding via Nominatim (OpenStreetMap)
-- 📍 **Browser Geolocation** — Detect your current location
-- 🛣️ **Route Calculation** — Real routing via OSRM
-- 🔋 **EV Range Calculator** — Accurate range, energy, charging time, cost
-- ⚡ **Charging Stop Recommendations** — Algorithmic scoring with transparent reasoning
-- 🔧 **Station Filters** — Distance, connector, power, availability, hours
-- 📊 **Station Comparison** — Compare up to 3 stations side-by-side
-- 💾 **Saved Stations** — Bookmark favorites
-- 📜 **Trip History** — Review past trips
-- 👤 **User Profiles** — Auth + vehicle management
-- 📱 **PWA Support** — Installable app shell
-- 📱 **Mobile Responsive** — Works on all screen sizes
+### Home (`/`)
+Landing page with hero section and quick access to main features.
 
-### Demo Stations (15 locations)
-Stations around Chhatrapati Sambhajinagar (Aurangabad), Maharashtra, India:
-- FastCharge Hub - CIDCO (120 kW)
-- GreenCharge Station - Railway Station (60 kW)
-- UltraCharge Mall (150 kW)
-- EcoCharge Highway (50 kW)
-- PowerUp Arena (25 kW)
-- VoltStation University (80 kW)
-- ChargePoint Express (180 kW)
-- QuickCharge Plaza (60 kW)
-- MegaCharge Station (350 kW)
-- CityCharge Center (22 kW)
-- HighwayCharge Ahmednagar (120 kW)
-- PuneExpress Charger (150 kW)
-- Pune Central Charge (100 kW)
-- Nashik Highway Charge (60 kW)
-- Mumbai Gateway Charger (200 kW)
+### Explore (`/explore`)
+Interactive map with charging station search, filters, and details.
 
-## 🛠️ Tech Stack
+### Trip Planner (`/planner`)
+Plan EV trips with origin/destination, vehicle profile, and charging recommendations.
 
-| Technology | Purpose |
-|-----------|---------|
-| React 18 | UI framework |
-| TypeScript 5 | Type safety |
-| Vite 6 | Build tool |
-| Tailwind CSS 4 | Styling |
-| MapLibre GL JS | Interactive maps |
-| React Router 6 | Navigation |
-| Lucide React | Icons |
-| OpenFreeMap | Map tiles (free) |
-| Nominatim | Geocoding (free) |
-| OSRM | Routing (free) |
+### Saved (`/saved`)
+View and manage bookmarked charging stations.
 
-## 📋 Commands
+### History (`/history`)
+Review past trip plans with full details.
 
-```bash
-# Development server (http://localhost:3000)
-npm run dev
+### Account (`/account`)
+Manage user profile and vehicle configurations.
 
-# Production build
-npm run build
+## 🔌 APIs Used
 
-# Type checking
-npm run typecheck
+All APIs are free and require no authentication:
+
+- **OpenStreetMap Nominatim** - Geocoding (location search)
+- **OSRM** - Route calculation (driving directions)
+- **OpenFreeMap** - Map tiles (MapLibre compatible)
+
+## 📊 Demo Data
+
+The app includes 15 demo charging stations around Chhatrapati Sambhajinagar (Aurangabad), Maharashtra, India for demonstration purposes. In production, these can be replaced with real API data.
+
+## 🎨 Design
+
+- **Theme**: Dark green/near-black with electric green accents
+- **Style**: Glassmorphism cards with subtle borders
+- **Typography**: Clean, modern, readable
+- **Animations**: Smooth transitions and micro-interactions
+- **Responsive**: Mobile-first design with adaptive layouts
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file (optional):
+
+```env
+# Supabase (for production auth)
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## 🌐 APIs Used (All Free, No Keys Required)
+The app works without any environment variables in demo mode.
 
-| API | Purpose | URL |
-|-----|---------|-----|
-| OpenFreeMap | Map tiles | tiles.openfreemap.org |
-| Nominatim | Geocoding | nominatim.openstreetmap.org |
-| OSRM | Routing | router.project-osrm.org |
+## 📱 PWA Installation
 
-## 🔧 Optional: Supabase Integration
+The app can be installed as a PWA:
 
-For production with real authentication and database:
+1. Open the app in Chrome/Edge
+2. Click the install icon in the address bar
+3. Follow the installation prompts
 
-1. Create a Supabase project at https://supabase.com
-2. Copy `.env.example` to `.env.local`
-3. Fill in your Supabase credentials
-4. Create the database tables (profiles, vehicles, saved_stations, trips, trip_stops)
+## 🧪 Browser Support
 
-## 🚀 Deploy to Vercel
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
-1. Push code to GitHub
-2. Import in Vercel dashboard
-3. Framework: Vite
-4. Build: `npm run build`
-5. Output: `dist`
-6. Deploy!
+## 📝 License
 
-## 📄 License
+MIT License - feel free to use this project for learning, portfolio, or commercial purposes.
 
-MIT License - Free for educational and commercial use.
+## 🤝 Contributing
 
-## 🎓 Perfect For
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest features
+- Submit pull requests
 
-- B.Tech engineering projects
-- Portfolio demonstrations
-- Learning modern web development
-- EV mobility product prototypes
+## 👨‍💻 Author
+
+Built as a B.Tech engineering project demonstrating modern web development skills.
+
+## 🙏 Acknowledgments
+
+- [OpenStreetMap](https://www.openstreetmap.org/) for map data
+- [OSRM](http://project-osrm.org/) for routing
+- [MapLibre](https://maplibre.org/) for map rendering
+- [Lucide](https://lucide.dev/) for icons
 
 ---
 
-**Built with ❤️ for EV drivers everywhere**
+**Made with ⚡ for EV drivers everywhere**
