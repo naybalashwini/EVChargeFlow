@@ -166,7 +166,7 @@ export default function Planner() {
       <div className="w-full md:w-1/2 h-[35vh] md:h-full relative">
         <MapView
           center={mapCenter}
-          zoom={tripResult ? 8 : 6}
+          zoom={10}
           stations={stations}
           userLocation={origin ? { lat: origin.latitude, lng: origin.longitude } : null}
           routeGeometry={routeResult?.geometry || null}
